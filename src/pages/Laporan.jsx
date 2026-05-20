@@ -1,11 +1,15 @@
 export default function Laporan() {
+
     return (
-        <div className="p-5">
+
+        <div>
 
             <h1 className="text-3xl font-bold">
-                Laporan Minyak Jelantah
+                Laporan
             </h1>
 
         </div>
+
     );
+
 }

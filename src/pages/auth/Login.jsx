@@ -1,10 +1,18 @@
 import { useState } from "react";
+
 import { useNavigate } from "react-router-dom";
+
 import axios from "axios";
 
 export default function Login() {
 
     const navigate = useNavigate();
+
+    /*
+    |--------------------------------------------------------------------------
+    | State
+    |--------------------------------------------------------------------------
+    */
 
     const [loading, setLoading] = useState(false);
 
@@ -15,7 +23,12 @@ export default function Login() {
         password: "",
     });
 
-    // Handle Input
+    /*
+    |--------------------------------------------------------------------------
+    | Handle Input
+    |--------------------------------------------------------------------------
+    */
+
     const handleChange = (evt) => {
 
         const { name, value } = evt.target;
@@ -27,7 +40,12 @@ export default function Login() {
 
     };
 
-    // Handle Submit
+    /*
+    |--------------------------------------------------------------------------
+    | Handle Submit
+    |--------------------------------------------------------------------------
+    */
+
     const handleSubmit = async (e) => {
 
         e.preventDefault();
@@ -37,17 +55,26 @@ export default function Login() {
         setError("");
 
         axios
-            .post("https://dummyjson.com/auth/login", {
 
-                username: dataForm.email,
-                password: dataForm.password,
-
-            })
+            .post(
+                "https://dummyjson.com/auth/login",
+                {
+                    username: dataForm.email,
+                    password: dataForm.password,
+                }
+            )
 
             .then((response) => {
 
                 console.log(response.data);
 
+                // Simpan login
+                localStorage.setItem(
+                    "petugas",
+                    JSON.stringify(response.data)
+                );
+
+                // Redirect
                 navigate("/dashboard");
 
             })
@@ -63,7 +90,7 @@ export default function Login() {
                 } else {
 
                     setError(
-                        "Terjadi kesalahan"
+                        "Terjadi kesalahan server"
                     );
 
                 }
@@ -78,75 +105,100 @@ export default function Login() {
 
     };
 
-    // Error
-    const errorInfo = error ? (
-
-        <div className="bg-red-200 mb-5 p-4 rounded-xl text-red-700 text-sm">
-            {error}
-        </div>
-
-    ) : null;
-
-    // Loading
-    const loadingInfo = loading ? (
-
-        <div className="bg-gray-200 mb-5 p-4 rounded-xl text-sm">
-            Mohon Tunggu...
-        </div>
-
-    ) : null;
-
     return (
 
-        <div>
+        <div className="min-h-screen bg-gray-100 flex justify-center items-center">
 
-            <h2 className="text-3xl font-bold text-center text-green-700 mb-8">
-                Login Petugas
-            </h2>
+            <div className="bg-white w-[450px] p-10 rounded-3xl shadow-sm">
 
-            {errorInfo}
+                {/* Logo */}
+                <div className="text-center">
 
-            {loadingInfo}
+                    <h1 className="text-4xl font-bold text-green-700">
+                        Zathra Prima Energi
+                    </h1>
 
-            <form
-                onSubmit={handleSubmit}
-                className="space-y-5"
-            >
+                    <p className="text-gray-500 mt-3">
+                        Login Petugas Penjemputan
+                    </p>
 
-                <input
-                    type="text"
-                    name="email"
-                    placeholder="Username"
-                    onChange={handleChange}
-                    className="w-full border p-4 rounded-2xl outline-none"
-                />
+                </div>
 
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    onChange={handleChange}
-                    className="w-full border p-4 rounded-2xl outline-none"
-                />
+                {/* Error */}
+                {
+                    error && (
 
-                <button
-                    type="submit"
-                    className="w-full bg-green-600 hover:bg-green-700 text-white p-4 rounded-2xl"
+                        <div className="bg-red-100 text-red-700 p-4 rounded-2xl mt-8 text-sm">
+
+                            {error}
+
+                        </div>
+
+                    )
+                }
+
+                {/* Loading */}
+                {
+                    loading && (
+
+                        <div className="bg-gray-100 text-gray-700 p-4 rounded-2xl mt-8 text-sm">
+
+                            Mohon tunggu...
+
+                        </div>
+
+                    )
+                }
+
+                {/* Form */}
+                <form
+                    onSubmit={handleSubmit}
+                    className="space-y-5 mt-8"
                 >
-                    Login
-                </button>
 
-            </form>
+                    <input
+                        type="text"
+                        name="email"
+                        placeholder="Username"
+                        onChange={handleChange}
+                        className="w-full border p-4 rounded-2xl outline-none"
+                    />
 
-            <div className="mt-8 text-sm text-gray-500 text-center">
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        onChange={handleChange}
+                        className="w-full border p-4 rounded-2xl outline-none"
+                    />
 
-                Username :
-                <b> emilys </b>
+                    <button
+                        type="submit"
+                        className="w-full bg-green-600 hover:bg-green-700 transition-all text-white p-4 rounded-2xl"
+                    >
 
-                <br />
+                        {
+                            loading
+                            ? "Loading..."
+                            : "Login"
+                        }
 
-                Password :
-                <b> emilyspass </b>
+                    </button>
+
+                </form>
+
+                {/* Demo */}
+                <div className="mt-8 text-sm text-gray-500 text-center leading-7">
+
+                    Username :
+                    <b> emilys </b>
+
+                    <br />
+
+                    Password :
+                    <b> emilyspass </b>
+
+                </div>
 
             </div>
 

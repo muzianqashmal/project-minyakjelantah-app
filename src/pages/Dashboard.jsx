@@ -42,20 +42,16 @@ export default function Dashboard() {
     ];
 
     return (
-        <div className="p-6">
 
-            {/* Title */}
-            <div>
+        <div>
 
-                <h1 className="text-3xl font-bold text-gray-800">
-                    Dashboard Minyak Jelantah
-                </h1>
+            <h1 className="text-3xl font-bold text-gray-800">
+                Dashboard Minyak Jelantah
+            </h1>
 
-                <p className="text-gray-500 mt-2">
-                    Monitoring sistem pencatatan dan penjemputan minyak jelantah.
-                </p>
-
-            </div>
+            <p className="text-gray-500 mt-2">
+                Monitoring sistem penjemputan minyak jelantah.
+            </p>
 
             {/* Cards */}
             <div className="grid grid-cols-4 gap-5 mt-8">
@@ -64,10 +60,10 @@ export default function Dashboard() {
 
                     <div
                         key={index}
-                        className="bg-white rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all"
+                        className="bg-white rounded-2xl p-5 shadow-sm"
                     >
 
-                        <div className="flex justify-between items-center">
+                        <div className="flex justify-between">
 
                             <div>
 
@@ -93,84 +89,8 @@ export default function Dashboard() {
 
             </div>
 
-            {/* Table */}
-            <div className="bg-white rounded-2xl shadow-sm mt-8 p-6">
-
-                <div className="flex justify-between items-center mb-5">
-
-                    <h1 className="text-xl font-bold text-gray-800">
-                        Penjemputan Terbaru
-                    </h1>
-
-                </div>
-
-                <table className="w-full">
-
-                    <thead>
-
-                        <tr className="border-b text-left">
-
-                            <th className="pb-4">Nama Mitra</th>
-                            <th className="pb-4">Tanggal</th>
-                            <th className="pb-4">Jumlah</th>
-                            <th className="pb-4">Status</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        <tr className="border-b">
-
-                            <td className="py-4">
-                                Warung Bu Siti
-                            </td>
-
-                            <td>
-                                12 Mei 2026
-                            </td>
-
-                            <td>
-                                25 Liter
-                            </td>
-
-                            <td>
-                                <span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm">
-                                    Diproses
-                                </span>
-                            </td>
-
-                        </tr>
-
-                        <tr className="border-b">
-
-                            <td className="py-4">
-                                RM Barokah
-                            </td>
-
-                            <td>
-                                13 Mei 2026
-                            </td>
-
-                            <td>
-                                40 Liter
-                            </td>
-
-                            <td>
-                                <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
-                                    Selesai
-                                </span>
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
         </div>
+
     );
+
 }

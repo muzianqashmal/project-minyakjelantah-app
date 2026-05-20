@@ -1,104 +1,57 @@
-import { Routes, Route } from "react-router-dom";
-import "./assets/tailwind.css";
+import {
+  Routes,
+  Route
+} from "react-router-dom";
 
-import React, { Suspense } from "react";
+import MainLayout from "./layouts/MainLayout";
 
-import Loading from "./components/Loading";
+import LandingPage from "./pages/LandingPage";
 
-// Public
-const LandingPage = React.lazy(() => import("./pages/LandingPage"));
+import Dashboard from "./pages/Dashboard";
+import Penjemputan from "./pages/Penjemputan";
 
-// Petugas
-const Dashboard = React.lazy(() => import("./pages/Dashboard"));
-const Penjemputan = React.lazy(() => import("./pages/Penjemputan"));
-const Riwayat = React.lazy(() => import("./pages/Riwayat"));
-const Pelanggan = React.lazy(() => import("./pages/Pelanggan"));
-const Laporan = React.lazy(() => import("./pages/Laporan"));
-const Pengaturan = React.lazy(() => import("./pages/Pengaturan"));
-
-// Auth
-const Login = React.lazy(() => import("./pages/auth/Login"));
-const Forgot = React.lazy(() => import("./pages/auth/Forgot"));
-
-// Layout
-const MainLayout = React.lazy(() => import("./layouts/MainLayout"));
-const AuthLayout = React.lazy(() => import("./layouts/AuthLayout"));
-
-const NotFound = React.lazy(() => import("./pages/NotFound"));
+import Login from "./pages/auth/Login";
 
 function App() {
 
-    return (
-        <Suspense fallback={<Loading />}>
+  return (
 
-            <Routes>
+    <Routes>
 
-                {/* Public */}
-                <Route
-                    path="/"
-                    element={<LandingPage />}
-                />
+      {/* Landing */}
+      <Route
+        path="/"
+        element={<LandingPage />}
+      />
 
-                {/* Auth */}
-                <Route element={<AuthLayout />}>
+      {/* Login */}
+      <Route
+        path="/login"
+        element={<Login />}
+      />
 
-                    <Route
-                        path="/login"
-                        element={<Login />}
-                    />
+      {/* Dashboard */}
+      <Route
+        path="/"
+        element={<MainLayout />}
+      >
 
-                    <Route
-                        path="/forgot"
-                        element={<Forgot />}
-                    />
+        <Route
+          path="dashboard"
+          element={<Dashboard />}
+        />
 
-                </Route>
+        <Route
+          path="penjemputan"
+          element={<Penjemputan />}
+        />
 
-                {/* Dashboard Petugas */}
-                <Route element={<MainLayout />}>
+      </Route>
 
-                    <Route
-                        path="/dashboard"
-                        element={<Dashboard />}
-                    />
+    </Routes>
 
-                    <Route
-                        path="/penjemputan"
-                        element={<Penjemputan />}
-                    />
+  );
 
-                    <Route
-                        path="/riwayat"
-                        element={<Riwayat />}
-                    />
-
-                    <Route
-                        path="/pelanggan"
-                        element={<Pelanggan />}
-                    />
-
-                    <Route
-                        path="/laporan"
-                        element={<Laporan />}
-                    />
-
-                    <Route
-                        path="/pengaturan"
-                        element={<Pengaturan />}
-                    />
-
-                </Route>
-
-                {/* Not Found */}
-                <Route
-                    path="*"
-                    element={<NotFound />}
-                />
-
-            </Routes>
-
-        </Suspense>
-    );
 }
 
 export default App;
