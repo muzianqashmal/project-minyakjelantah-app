@@ -1,0 +1,212 @@
+[
+  {
+    "orderId": "ORD-1001",
+    "customerName": "Aruna Mahameru",
+    "status": "Delivered",
+    "totalPrice": 1250000,
+    "date": "2024-04-10"
+  },
+  {
+    "orderId": "ORD-1002",
+    "customerName": "Banyu Biru",
+    "status": "Delivered",
+    "totalPrice": 450000,
+    "date": "2024-04-10"
+  },
+  {
+    "orderId": "ORD-1003",
+    "customerName": "Citra Lestari",
+    "status": "Shipped",
+    "totalPrice": 75000,
+    "date": "2024-04-11"
+  },
+  {
+    "orderId": "ORD-1004",
+    "customerName": "Darma Wangsa",
+    "status": "Cancelled",
+    "totalPrice": 200000,
+    "date": "2024-04-11"
+  },
+  {
+    "orderId": "ORD-1005",
+    "customerName": "Elang Cakrawala",
+    "status": "Delivered",
+    "totalPrice": 350000,
+    "date": "2024-04-11"
+  },
+  {
+    "orderId": "ORD-1006",
+    "customerName": "Fanya Aurora",
+    "status": "Cancelled",
+    "totalPrice": 890000,
+    "date": "2024-04-12"
+  },
+  {
+    "orderId": "ORD-1007",
+    "customerName": "Gema Sanubari",
+    "status": "Delivered",
+    "totalPrice": 120000,
+    "date": "2024-04-12"
+  },
+  {
+    "orderId": "ORD-1008",
+    "customerName": "Hana Mentari",
+    "status": "Shipped",
+    "totalPrice": 55000,
+    "date": "2024-04-12"
+  },
+  {
+    "orderId": "ORD-1009",
+    "customerName": "Indra Kesuma",
+    "status": "Delivered",
+    "totalPrice": 990000,
+    "date": "2024-04-13"
+  },
+  {
+    "orderId": "ORD-1010",
+    "customerName": "Jingga Senja",
+    "status": "Cancelled",
+    "totalPrice": 275000,
+    "date": "2024-04-13"
+  },
+  {
+    "orderId": "ORD-1011",
+    "customerName": "Kirana Shanti",
+    "status": "Delivered",
+    "totalPrice": 1500000,
+    "date": "2024-04-13"
+  },
+  {
+    "orderId": "ORD-1012",
+    "customerName": "Lentera Jiwa",
+    "status": "Cancelled",
+    "totalPrice": 45000,
+    "date": "2024-04-14"
+  },
+  {
+    "orderId": "ORD-1013",
+    "customerName": "Mega Mendung",
+    "status": "Delivered",
+    "totalPrice": 320000,
+    "date": "2024-04-14"
+  },
+  {
+    "orderId": "ORD-1014",
+    "customerName": "Nara Syailendra",
+    "status": "Shipped",
+    "totalPrice": 670000,
+    "date": "2024-04-14"
+  },
+  {
+    "orderId": "ORD-1015",
+    "customerName": "Ombak Segara",
+    "status": "Cancelled",
+    "totalPrice": 185000,
+    "date": "2024-04-15"
+  },
+  {
+    "orderId": "ORD-1016",
+    "customerName": "Pijar Pagi",
+    "status": "Delivered",
+    "totalPrice": 210000,
+    "date": "2024-04-15"
+  },
+  {
+    "orderId": "ORD-1017",
+    "customerName": "Qiana Maheswari",
+    "status": "Shipped",
+    "totalPrice": 430000,
+    "date": "2024-04-15"
+  },
+  {
+    "orderId": "ORD-1018",
+    "customerName": "Rimba Belantara",
+    "status": "Delivered",
+    "totalPrice": 95000,
+    "date": "2024-04-16"
+  },
+  {
+    "orderId": "ORD-1019",
+    "customerName": "Saka Dirgantara",
+    "status": "Cancelled",
+    "totalPrice": 540000,
+    "date": "2024-04-16"
+  },
+  {
+    "orderId": "ORD-1020",
+    "customerName": "Tiara Permata",
+    "status": "Delivered",
+    "totalPrice": 2500000,
+    "date": "2024-04-16"
+  },
+  {
+    "orderId": "ORD-1021",
+    "customerName": "Udayana Bali",
+    "status": "Shipped",
+    "totalPrice": 380000,
+    "date": "2024-04-17"
+  },
+  {
+    "orderId": "ORD-1022",
+    "customerName": "Vira Nusantara",
+    "status": "Delivered",
+    "totalPrice": 145000,
+    "date": "2024-04-17"
+  },
+  {
+    "orderId": "ORD-1023",
+    "customerName": "Wira Bhakti",
+    "status": "Cancelled",
+    "totalPrice": 300000,
+    "date": "2024-04-17"
+  },
+  {
+    "orderId": "ORD-1024",
+    "customerName": "Xandra Clarissa",
+    "status": "Cancelled",
+    "totalPrice": 720000,
+    "date": "2024-04-18"
+  },
+  {
+    "orderId": "ORD-1025",
+    "customerName": "Yuda Satria",
+    "status": "Delivered",
+    "totalPrice": 560000,
+    "date": "2024-04-18"
+  },
+  {
+    "orderId": "ORD-1026",
+    "customerName": "Zhara Safira",
+    "status": "Shipped",
+    "totalPrice": 1150000,
+    "date": "2024-04-18"
+  },
+  {
+    "orderId": "ORD-1027",
+    "customerName": "Aksa Abimanyu",
+    "status": "Delivered",
+    "totalPrice": 230000,
+    "date": "2024-04-19"
+  },
+  {
+    "orderId": "ORD-1028",
+    "customerName": "Bela Negara",
+    "status": "Cancelled",
+    "totalPrice": 165000,
+    "date": "2024-04-19"
+  },
+  {
+    "orderId": "ORD-1029",
+    "customerName": "Cahaya Ilahi",
+    "status": "Delivered",
+    "totalPrice": 880000,
+    "date": "2024-04-19"
+  },
+  {
+    "orderId": "ORD-1030",
+    "customerName": "Dewinta Saraswati",
+    "status": "Shipped",
+    "totalPrice": 490000,
+    "date": "2024-04-20"
+  }
+]

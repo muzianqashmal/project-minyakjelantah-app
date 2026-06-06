@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "nama": "RM Bare Solok",
+    "nohp": "081234567890",
+    "alamat": "Rumbai",
+    "jumlah": "120 Liter",
+    "tanggal": "2026-06-07"
+  },
+  {
+    "id": 2,
+    "nama": "RM Pak Nurdin",
+    "nohp": "082345678901",
+    "alamat": "Umban Sari",
+    "jumlah": "95 Liter",
+    "tanggal": "2026-06-07"
+  },
+  {
+    "id": 3,
+    "nama": "Hotel Pangeran Pekanbaru",
+    "nohp": "083456789012",
+    "alamat": "Sukajadi",
+    "jumlah": "180 Liter",
+    "tanggal": "2026-06-07"
+  },
+  {
+    "id": 4,
+    "nama": "Restoran Kimteng",
+    "nohp": "084567890123",
+    "alamat": "Jalan Sudirman",
+    "jumlah": "75 Liter",
+    "tanggal": "2026-06-07"
+  },
+  {
+    "id": 5,
+    "nama": "Dapur MBG Pekanbaru",
+    "nohp": "085678901234",
+    "alamat": "Panam",
+    "jumlah": "150 Liter",
+    "tanggal": "2026-06-07"
+  }
+]

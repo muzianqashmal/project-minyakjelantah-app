@@ -1,0 +1,212 @@
+[
+    {
+        "id": "CUS-001",
+        "name": "Aruna Mahameru",
+        "email": "aruna@langit.com",
+        "phone": "081122334455",
+        "loyalty": "Platinum"
+    },
+    {
+        "id": "CUS-002",
+        "name": "Banyu Biru",
+        "email": "banyu.biru@samudera.id",
+        "phone": "081233445566",
+        "loyalty": "Gold"
+    },
+    {
+        "id": "CUS-003",
+        "name": "Citra Lestari",
+        "email": "citra.les@alam.com",
+        "phone": "081344556677",
+        "loyalty": "Silver"
+    },
+    {
+        "id": "CUS-004",
+        "name": "Darma Wangsa",
+        "email": "darma.w@kerajaan.id",
+        "phone": "081455667788",
+        "loyalty": "Bronze"
+    },
+    {
+        "id": "CUS-005",
+        "name": "Elang Cakrawala",
+        "email": "elang@angkasa.com",
+        "phone": "081566778899",
+        "loyalty": "Gold"
+    },
+    {
+        "id": "CUS-006",
+        "name": "Fanya Aurora",
+        "email": "fanya.ao@pelangi.com",
+        "phone": "081677889900",
+        "loyalty": "Platinum"
+    },
+    {
+        "id": "CUS-007",
+        "name": "Gema Sanubari",
+        "email": "gema.s@suara.id",
+        "phone": "081788990011",
+        "loyalty": "Silver"
+    },
+    {
+        "id": "CUS-008",
+        "name": "Hana Mentari",
+        "email": "hana.m@fajar.com",
+        "phone": "081899001122",
+        "loyalty": "Bronze"
+    },
+    {
+        "id": "CUS-009",
+        "name": "Indra Kesuma",
+        "email": "indra.k@mahkota.com",
+        "phone": "081900112233",
+        "loyalty": "Silver"
+    },
+    {
+        "id": "CUS-010",
+        "name": "Jingga Senja",
+        "email": "jingga@sore.id",
+        "phone": "082111223344",
+        "loyalty": "Gold"
+    },
+    {
+        "id": "CUS-011",
+        "name": "Kirana Shanti",
+        "email": "kirana@cahaya.com",
+        "phone": "082222334455",
+        "loyalty": "Platinum"
+    },
+    {
+        "id": "CUS-012",
+        "name": "Lentera Jiwa",
+        "email": "lentera@malam.id",
+        "phone": "082333445566",
+        "loyalty": "Bronze"
+    },
+    {
+        "id": "CUS-013",
+        "name": "Mega Mendung",
+        "email": "mega@hujan.com",
+        "phone": "082444556677",
+        "loyalty": "Gold"
+    },
+    {
+        "id": "CUS-014",
+        "name": "Nara Syailendra",
+        "email": "nara.s@sejarah.id",
+        "phone": "082555667788",
+        "loyalty": "Silver"
+    },
+    {
+        "id": "CUS-015",
+        "name": "Ombak Segara",
+        "email": "ombak@pantai.com",
+        "phone": "082666778899",
+        "loyalty": "Bronze"
+    },
+    {
+        "id": "CUS-016",
+        "name": "Pijar Pagi",
+        "email": "pijar@terbit.id",
+        "phone": "082777889900",
+        "loyalty": "Platinum"
+    },
+    {
+        "id": "CUS-017",
+        "name": "Qiana Maheswari",
+        "email": "qiana@dewi.com",
+        "phone": "082888990011",
+        "loyalty": "Gold"
+    },
+    {
+        "id": "CUS-018",
+        "name": "Rimba Belantara",
+        "email": "rimba@hutan.id",
+        "phone": "082999001122",
+        "loyalty": "Silver"
+    },
+    {
+        "id": "CUS-019",
+        "name": "Saka Dirgantara",
+        "email": "saka.d@pilot.com",
+        "phone": "083111223344",
+        "loyalty": "Bronze"
+    },
+    {
+        "id": "CUS-020",
+        "name": "Tiara Permata",
+        "email": "tiara.p@berlian.id",
+        "phone": "083222334455",
+        "loyalty": "Platinum"
+    },
+    {
+        "id": "CUS-021",
+        "name": "Udayana Bali",
+        "email": "udayana@nusa.com",
+        "phone": "083333445566",
+        "loyalty": "Gold"
+    },
+    {
+        "id": "CUS-022",
+        "name": "Vira Nusantara",
+        "email": "vira.n@tanahair.id",
+        "phone": "083444556677",
+        "loyalty": "Silver"
+    },
+    {
+        "id": "CUS-023",
+        "name": "Wira Bhakti",
+        "email": "wira@pejuang.com",
+        "phone": "083555667788",
+        "loyalty": "Bronze"
+    },
+    {
+        "id": "CUS-024",
+        "name": "Xandra Clarissa",
+        "email": "xandra@modern.id",
+        "phone": "083666778899",
+        "loyalty": "Silver"
+    },
+    {
+        "id": "CUS-025",
+        "name": "Yuda Satria",
+        "email": "yuda@ksatria.id",
+        "phone": "083777889900",
+        "loyalty": "Gold"
+    },
+    {
+        "id": "CUS-026",
+        "name": "Zhara Safira",
+        "email": "zhara@permata.com",
+        "phone": "083888990011",
+        "loyalty": "Platinum"
+    },
+    {
+        "id": "CUS-027",
+        "name": "Aksa Abimanyu",
+        "email": "aksa@bumi.id",
+        "phone": "083999001122",
+        "loyalty": "Silver"
+    },
+    {
+        "id": "CUS-028",
+        "name": "Bela Negara",
+        "email": "bela@patriot.id",
+        "phone": "085111223344",
+        "loyalty": "Bronze"
+    },
+    {
+        "id": "CUS-029",
+        "name": "Cahaya Ilahi",
+        "email": "cahaya@spiritual.com",
+        "phone": "085222334455",
+        "loyalty": "Platinum"
+    },
+    {
+        "id": "CUS-030",
+        "name": "Dewinta Saraswati",
+        "email": "dewinta@seni.id",
+        "phone": "085333445566",
+        "loyalty": "Gold"
+    }
+]
