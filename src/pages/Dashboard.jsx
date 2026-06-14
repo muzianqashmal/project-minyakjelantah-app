@@ -1,96 +1,435 @@
-import {
-    FaOilCan,
-    FaUsers,
-    FaMoneyBillWave
-} from "react-icons/fa";
+import { useEffect, useState } from "react";
 
 import {
-    MdOutlineLocalShipping
+    Chart as ChartJS,
+    ArcElement,
+    Tooltip,
+    Legend,
+} from "chart.js";
+
+import { Doughnut } from "react-chartjs-2";
+
+import {
+    MdPeople,
+    MdLocalShipping,
+    MdPending,
+    MdCheckCircle,
 } from "react-icons/md";
+
+ChartJS.register(
+    ArcElement,
+    Tooltip,
+    Legend
+);
 
 export default function Dashboard() {
 
-    const cards = [
-        {
-            title: "Total Penjemputan",
-            value: "120",
-            icon: <MdOutlineLocalShipping />,
-            bg: "bg-blue-100",
-            text: "text-blue-600"
-        },
-        {
-            title: "Total Liter",
-            value: "2.450 L",
-            icon: <FaOilCan />,
-            bg: "bg-yellow-100",
-            text: "text-yellow-600"
-        },
-        {
-            title: "Total Pelanggan",
-            value: "35",
-            icon: <FaUsers />,
-            bg: "bg-green-100",
-            text: "text-green-600"
-        },
-        {
-            title: "Pendapatan",
-            value: "Rp 12 Jt",
-            icon: <FaMoneyBillWave />,
-            bg: "bg-red-100",
-            text: "text-red-600"
-        }
-    ];
+    const [totalPelanggan, setTotalPelanggan] =
+        useState(0);
+
+    const [totalPenjemputan, setTotalPenjemputan] =
+        useState(0);
+
+    const [diproses, setDiproses] =
+        useState(0);
+
+    const [selesai, setSelesai] =
+        useState(0);
+
+    const [dataTerbaru, setDataTerbaru] =
+        useState([]);
+
+    const [chartData, setChartData] =
+        useState(null);
+
+    useEffect(() => {
+        loadData();
+    }, []);
+
+    const loadData = () => {
+
+        const data =
+            JSON.parse(
+                localStorage.getItem(
+                    "penjemputan"
+                )
+            ) || [];
+
+        setTotalPenjemputan(
+            data.length
+        );
+
+        const pelangganUnik = [
+            ...new Set(
+                data.map(
+                    (item) =>
+                        item.hp ||
+                        item.nohp
+                )
+            ),
+        ];
+
+        setTotalPelanggan(
+            pelangganUnik.length
+        );
+
+        const menunggu =
+            data.filter(
+                (item) =>
+                    item.status ===
+                    "Menunggu"
+            ).length;
+
+        const jumlahDiproses =
+            data.filter(
+                (item) =>
+                    item.status ===
+                    "Diproses" ||
+                    item.status ===
+                    "Dalam Perjalanan"
+            ).length;
+
+        const jumlahSelesai =
+            data.filter(
+                (item) =>
+                    item.status ===
+                    "Selesai"
+            ).length;
+
+        setDiproses(
+            jumlahDiproses
+        );
+
+        setSelesai(
+            jumlahSelesai
+        );
+
+        setChartData({
+            labels: [
+                "Menunggu",
+                "Diproses",
+                "Selesai",
+            ],
+            datasets: [
+                {
+                    data: [
+                        menunggu,
+                        jumlahDiproses,
+                        jumlahSelesai,
+                    ],
+                    backgroundColor: [
+                        "#f59e0b",
+                        "#3b82f6",
+                        "#22c55e",
+                    ],
+                    borderWidth: 0,
+                },
+            ],
+        });
+
+        setDataTerbaru(
+            [...data]
+                .reverse()
+                .slice(0, 5)
+        );
+    };
 
     return (
+        <div className="space-y-6">
 
-        <div>
+            {/* Header */}
 
-            <h1 className="text-3xl font-bold text-gray-800">
-                Dashboard Minyak Jelantah
-            </h1>
+            <div className="flex justify-between items-center">
 
-            <p className="text-gray-500 mt-2">
-                Monitoring sistem penjemputan minyak jelantah.
-            </p>
+                <div>
 
-            {/* Cards */}
-            <div className="grid grid-cols-4 gap-5 mt-8">
+                    <h1 className="text-4xl font-bold text-slate-800">
+                        Dashboard
+                    </h1>
 
-                {cards.map((item, index) => (
+                    <p className="text-slate-500 mt-1">
+                        Selamat datang kembali, Admin!
+                        Kelola penjemputan minyak jelantah dengan mudah.
+                    </p>
 
-                    <div
-                        key={index}
-                        className="bg-white rounded-2xl p-5 shadow-sm"
-                    >
+                </div>
 
-                        <div className="flex justify-between">
+                <div className="bg-white px-5 py-3 rounded-xl shadow-sm">
+                    {new Date().toLocaleDateString("id-ID", {
+                        weekday: "long",
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                    })}
+                </div>
 
-                            <div>
+            </div>
 
-                                <p className="text-gray-500">
-                                    {item.title}
-                                </p>
+            {/* Statistik */}
 
-                                <h1 className="text-3xl font-bold mt-3">
-                                    {item.value}
-                                </h1>
+            <div className="grid lg:grid-cols-4 gap-5">
 
-                            </div>
+                <div className="bg-white p-6 rounded-2xl shadow-sm">
 
-                            <div className={`${item.bg} ${item.text} p-4 rounded-2xl text-3xl`}>
-                                {item.icon}
-                            </div>
+                    <div className="flex items-center gap-4">
+
+                        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+
+                            <MdLocalShipping
+                                size={30}
+                                className="text-blue-600"
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <h3 className="text-gray-500">
+                                Total Penjemputan
+                            </h3>
+
+                            <h1 className="text-4xl font-bold">
+                                {totalPenjemputan}
+                            </h1>
+
+                            <p className="text-sm text-gray-400">
+                                Semua data penjemputan
+                            </p>
 
                         </div>
 
                     </div>
 
-                ))}
+                </div>
+
+                <div className="bg-white p-6 rounded-2xl shadow-sm">
+
+                    <div className="flex items-center gap-4">
+
+                        <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center">
+
+                            <MdPending
+                                size={30}
+                                className="text-yellow-500"
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <h3 className="text-gray-500">
+                                Menunggu
+                            </h3>
+
+                            <h1 className="text-4xl font-bold">
+                                {
+                                    chartData?.datasets[0]
+                                        ?.data[0]
+                                }
+                            </h1>
+
+                            <p className="text-sm text-gray-400">
+                                Menunggu proses
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div className="bg-white p-6 rounded-2xl shadow-sm">
+
+                    <div className="flex items-center gap-4">
+
+                        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+
+                            <MdPending
+                                size={30}
+                                className="text-blue-600"
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <h3 className="text-gray-500">
+                                Diproses
+                            </h3>
+
+                            <h1 className="text-4xl font-bold">
+                                {diproses}
+                            </h1>
+
+                            <p className="text-sm text-gray-400">
+                                Sedang diproses
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div className="bg-white p-6 rounded-2xl shadow-sm">
+
+                    <div className="flex items-center gap-4">
+
+                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+
+                            <MdCheckCircle
+                                size={30}
+                                className="text-green-600"
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <h3 className="text-gray-500">
+                                Selesai
+                            </h3>
+
+                            <h1 className="text-4xl font-bold">
+                                {selesai}
+                            </h1>
+
+                            <p className="text-sm text-gray-400">
+                                Selesai dijemput
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {/* Chart + Table */}
+
+            <div className="grid lg:grid-cols-2 gap-6">
+
+                <div className="bg-white rounded-2xl p-6 shadow-sm">
+
+                    <h2 className="text-2xl font-bold">
+                        Statistik Penjemputan
+                    </h2>
+
+                    <p className="text-gray-500 text-sm mb-5">
+                        Distribusi status penjemputan
+                    </p>
+
+                    <div className="max-w-[350px] mx-auto">
+
+                        {chartData && (
+                            <Doughnut
+                                data={chartData}
+                            />
+                        )}
+
+                    </div>
+
+                </div>
+
+                <div className="bg-white rounded-2xl p-6 shadow-sm">
+
+                    <div className="flex justify-between items-center mb-4">
+
+                        <div>
+
+                            <h2 className="text-2xl font-bold">
+                                Penjemputan Terbaru
+                            </h2>
+
+                            <p className="text-sm text-gray-500">
+                                5 data penjemputan terbaru
+                            </p>
+
+                        </div>
+
+                        <button className="text-green-600 font-semibold">
+                            Lihat Semua
+                        </button>
+
+                    </div>
+
+                    <table className="w-full">
+
+                        <thead>
+
+                            <tr className="border-b">
+
+                                <th className="text-left py-3">
+                                    Nama
+                                </th>
+
+                                <th className="text-left py-3">
+                                    Liter
+                                </th>
+
+                                <th className="text-left py-3">
+                                    Status
+                                </th>
+
+                                <th className="text-left py-3">
+                                    Tanggal
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {dataTerbaru.map(
+                                (item) => (
+
+                                    <tr
+                                        key={item.id}
+                                        className="border-b"
+                                    >
+
+                                        <td className="py-3">
+                                            {item.nama}
+                                        </td>
+
+                                        <td>
+                                            {item.jumlah} L
+                                        </td>
+
+                                        <td>
+
+                                            <span
+                                                className={`px-3 py-1 rounded-full text-xs ${item.status === "Selesai"
+                                                        ? "bg-green-100 text-green-700"
+                                                        : item.status === "Diproses"
+                                                            ? "bg-blue-100 text-blue-700"
+                                                            : "bg-yellow-100 text-yellow-700"
+                                                    }`}
+                                            >
+                                                {item.status}
+                                            </span>
+
+                                        </td>
+
+                                        <td>
+                                            {item.tanggal}
+                                        </td>
+
+                                    </tr>
+
+                                )
+                            )}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
 
             </div>
 
         </div>
-
     );
-
 }

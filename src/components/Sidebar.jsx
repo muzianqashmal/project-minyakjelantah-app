@@ -1,83 +1,236 @@
 import {
-    MdDashboard,
-    MdOutlineLocalShipping,
-    MdHistory,
-    MdPeople,
-    MdAssessment,
-    MdSettings
+  MdDashboard,
+  MdOutlineLocalShipping,
+  MdHistory,
+  MdPeople,
+  MdAssessment,
+  MdSettings,
+  MdAddCircle,
+  MdLogout
 } from "react-icons/md";
 
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 export default function Sidebar() {
 
-    const menu = [
-        {
-            title: "Dashboard",
-            path: "/dashboard",
-            icon: <MdDashboard />
-        },
-        {
-            title: "Penjemputan",
-            path: "/penjemputan",
-            icon: <MdOutlineLocalShipping />
-        },
-        {
-            title: "Riwayat",
-            path: "/riwayat",
-            icon: <MdHistory />
-        },
-        {
-            title: "Pelanggan",
-            path: "/pelanggan",
-            icon: <MdPeople />
-        },
-        {
-            title: "Laporan",
-            path: "/laporan",
-            icon: <MdAssessment />
-        },
-        {
-            title: "Pengaturan",
-            path: "/pengaturan",
-            icon: <MdSettings />
-        }
-    ];
+  const petugas =
+    JSON.parse(
+      localStorage.getItem("petugas")
+    );
 
-    return (
+  const menu = [
+    {
+      title: "Dashboard",
+      path: "/dashboard",
+      icon: <MdDashboard />
+    },
+    {
+      title: "Tambah Penjemputan",
+      path: "/tambah",
+      icon: <MdAddCircle />
+    },
+    {
+      title: "Data Penjemputan",
+      path: "/penjemputan",
+      icon: <MdOutlineLocalShipping />
+    },
+    {
+      title: "Data Pelanggan",
+      path: "/pelanggan",
+      icon: <MdPeople />
+    },
+    {
+      title: "Riwayat",
+      path: "/riwayat",
+      icon: <MdHistory />
+    },
+    {
+      title: "Laporan",
+      path: "/laporan",
+      icon: <MdAssessment />
+    },
+    {
+      title: "Pengaturan",
+      path: "/pengaturan",
+      icon: <MdSettings />
+    }
+  ];
 
-        <div className="w-64 min-h-screen bg-green-700 text-white p-6">
+  const logout = () => {
 
-            <h1 className="text-4xl font-bold leading-tight">
-                Zathra Prima Energi
-            </h1>
+    if (
+      !window.confirm(
+        "Yakin ingin logout?"
+      )
+    ) {
+      return;
+    }
 
-            <div className="space-y-3 mt-14">
+    localStorage.removeItem(
+      "petugas"
+    );
 
-                {menu.map((item, index) => (
+    window.location.href =
+      "/login";
+  };
 
-                    <Link
-                        key={index}
-                        to={item.path}
-                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-green-800 transition-all"
-                    >
+  return (
 
-                        <div className="text-2xl">
-                            {item.icon}
-                        </div>
+    <aside
+      className="
+      w-72
+      min-h-screen
+      text-white
+      flex
+      flex-col
+      bg-gradient-to-b
+      from-green-950
+      via-green-900
+      to-green-700
+    "
+    >
 
-                        <h1>
-                            {item.title}
-                        </h1>
+      {/* Logo */}
 
-                    </Link>
+      <div className="p-6">
 
-                ))}
+        <h1 className="text-3xl font-bold">
+          ZATHRA
+        </h1>
 
-            </div>
+        <p className="text-green-300">
+          PRIMA ENERGI
+        </p>
+
+      </div>
+
+      {/* User */}
+
+      <div className="px-6 pb-6">
+
+        <div className="flex items-center gap-3">
+
+          <img
+            src="https://i.pravatar.cc/100"
+            alt=""
+            className="
+              w-12
+              h-12
+              rounded-full
+              border-2
+              border-green-300
+            "
+          />
+
+          <div>
+
+            <h3 className="font-bold">
+              {
+                petugas?.firstName ||
+                "Administrator"
+              }
+            </h3>
+
+            <p className="text-sm text-green-300">
+              Admin
+            </p>
+
+          </div>
 
         </div>
 
-    );
+      </div>
+
+      {/* Menu */}
+
+      <div className="flex-1 px-4">
+
+        {
+          menu.map((item) => (
+
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={({ isActive }) =>
+                `
+                flex
+                items-center
+                gap-3
+                p-4
+                rounded-xl
+                mb-2
+                transition-all
+                ${
+                  isActive
+                    ? "bg-green-600 shadow-lg"
+                    : "hover:bg-green-800"
+                }
+              `
+              }
+            >
+
+              <span className="text-2xl">
+                {item.icon}
+              </span>
+
+              <span>
+                {item.title}
+              </span>
+
+            </NavLink>
+
+          ))
+        }
+
+      </div>
+
+      {/* Foto Armada */}
+
+      <div className="p-4">
+
+        <img
+          src="/img/tanki.jpeg"
+          alt="Armada"
+          className="
+            w-full
+            h-40
+            object-cover
+            rounded-2xl
+            shadow-lg
+          "
+        />
+
+      </div>
+
+      {/* Logout */}
+
+      <div className="p-4">
+
+        <button
+          onClick={logout}
+          className="
+            w-full
+            flex
+            items-center
+            justify-center
+            gap-2
+            bg-red-500
+            hover:bg-red-600
+            rounded-xl
+            p-3
+          "
+        >
+
+          <MdLogout />
+
+          Logout
+
+        </button>
+
+      </div>
+
+    </aside>
+
+  );
 
 }

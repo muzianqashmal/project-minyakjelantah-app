@@ -1,129 +1,404 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
 
 export default function Penjemputan() {
 
-    const [data, setData] = useState([]);
-    const [query, setQuery] = useState("");
-    const [error, setError] = useState(null);
+  const [data, setData] =
+    useState([]);
 
-    useEffect(() => {
+  const [search, setSearch] =
+    useState("");
 
-        const timeout = setTimeout(() => {
+  useEffect(() => {
+    loadData();
+  }, []);
 
-            const url = query
-                ? `https://dummyjson.com/users/search?q=${query}`
-                : `https://dummyjson.com/users`;
+  const loadData = () => {
 
-            axios
-                .get(url)
-                .then((response) => {
+    const hasil =
+      JSON.parse(
+        localStorage.getItem(
+          "penjemputan"
+        )
+      ) || [];
 
-                    const hasil = response.data.users.map((user) => ({
-                        id: user.id,
-                        nama: `${user.firstName} ${user.lastName}`,
-                        nohp: user.phone,
-                        alamat: user.address.city,
-                        jumlah: `${Math.floor(Math.random() * 50) + 10} Liter`,
-                        tanggal: "2026-06-07"
-                    }));
+    setData(hasil);
 
-                    setData(hasil);
+  };
 
-                })
-                .catch((err) => {
+  const ubahStatus = (
+    id,
+    statusBaru
+  ) => {
 
-                    setError(err.message);
+    const dataBaru =
+      data.map((item) => {
 
-                });
+        if (
+          item.id === id
+        ) {
 
-        }, 500);
+          return {
+            ...item,
+            status:
+              statusBaru,
+          };
 
-        return () => clearTimeout(timeout);
+        }
 
-    }, [query]);
+        return item;
 
-    return (
+      });
 
-        <div>
+    setData(dataBaru);
 
-            <h1 className="text-3xl font-bold text-green-700 mb-6">
-                Data Penjemputan
-            </h1>
+    localStorage.setItem(
+      "penjemputan",
+      JSON.stringify(dataBaru)
+    );
 
-            <div className="bg-white p-5 rounded-2xl shadow-sm mb-6">
+    const riwayat =
+      JSON.parse(
+        localStorage.getItem(
+          "riwayat"
+        )
+      ) || [];
 
-                <input
-                    type="text"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Cari pelanggan..."
-                    className="w-full border p-3 rounded-xl"
-                />
+    const dataUpdate =
+      data.find(
+        (x) =>
+          x.id === id
+      );
 
-            </div>
+    riwayat.push({
+      id: Date.now(),
+      pengajuanId: id,
+      nama:
+        dataUpdate.nama,
+      status:
+        statusBaru,
+      tanggal:
+        new Date().toLocaleString(),
+    });
 
-            {error && (
-                <div className="bg-red-100 text-red-600 p-3 rounded-xl mb-4">
-                    {error}
-                </div>
-            )}
+    localStorage.setItem(
+      "riwayat",
+      JSON.stringify(riwayat)
+    );
 
-            <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
+  };
 
-                <table className="w-full">
+  const hapusData = (
+    id
+  ) => {
 
-                    <thead className="bg-green-600 text-white">
+    if (
+      !window.confirm(
+        "Yakin ingin menghapus data?"
+      )
+    ) {
+      return;
+    }
 
-                        <tr>
+    const hasil =
+      data.filter(
+        (item) =>
+          item.id !== id
+      );
 
-                            <th className="p-4 text-left">Nama</th>
-                            <th className="p-4 text-left">No HP</th>
-                            <th className="p-4 text-left">Alamat</th>
-                            <th className="p-4 text-left">Jumlah</th>
-                            <th className="p-4 text-left">Tanggal</th>
+    setData(hasil);
 
-                        </tr>
+    localStorage.setItem(
+      "penjemputan",
+      JSON.stringify(hasil)
+    );
 
-                    </thead>
+  };
 
-                    <tbody>
+  const filteredData =
+    data.filter(
+      (item) =>
+        item.nama
+          ?.toLowerCase()
+          .includes(
+            search.toLowerCase()
+          ) ||
+        item.id
+          ?.toLowerCase()
+          .includes(
+            search.toLowerCase()
+          )
+    );
 
-                        {data.map((item) => (
+  const totalSelesai =
+    data.filter(
+      (item) =>
+        item.status ===
+        "Selesai"
+    ).length;
 
-                            <tr
-                                key={item.id}
-                                className="border-b"
-                            >
+  const totalDiproses =
+    data.filter(
+      (item) =>
+        item.status ===
+          "Diproses" ||
+        item.status ===
+          "Dalam Perjalanan"
+    ).length;
 
-                                <td className="p-4">
+  return (
 
-                                    <Link
-                                        to={`/penjemputan/${item.id}`}
-                                        className="text-green-600 hover:underline"
-                                    >
-                                        {item.nama}
-                                    </Link>
+    <div className="space-y-6">
 
-                                </td>
+      <div className="bg-white p-6 rounded-xl shadow">
 
-                                <td>{item.nohp}</td>
-                                <td>{item.alamat}</td>
-                                <td>{item.jumlah}</td>
-                                <td>{item.tanggal}</td>
+        <div className="flex justify-between items-center mb-5">
 
-                            </tr>
+          <h1 className="text-3xl font-bold">
+            Data Penjemputan
+          </h1>
 
-                        ))}
-
-                    </tbody>
-
-                </table>
-
-            </div>
+          <Link
+            to="/tambah"
+            className="bg-green-600 text-white px-4 py-2 rounded"
+          >
+            Tambah Data
+          </Link>
 
         </div>
 
-    );
+        <div className="grid md:grid-cols-3 gap-4 mb-5">
+
+          <div className="bg-blue-100 p-4 rounded-xl">
+
+            <h3 className="font-semibold">
+              Total Penjemputan
+            </h3>
+
+            <p className="text-3xl font-bold text-blue-700">
+              {data.length}
+            </p>
+
+          </div>
+
+          <div className="bg-yellow-100 p-4 rounded-xl">
+
+            <h3 className="font-semibold">
+              Sedang Diproses
+            </h3>
+
+            <p className="text-3xl font-bold text-yellow-600">
+              {totalDiproses}
+            </p>
+
+          </div>
+
+          <div className="bg-green-100 p-4 rounded-xl">
+
+            <h3 className="font-semibold">
+              Selesai
+            </h3>
+
+            <p className="text-3xl font-bold text-green-700">
+              {totalSelesai}
+            </p>
+
+          </div>
+
+        </div>
+
+        <input
+          type="text"
+          placeholder="Cari ID atau Nama..."
+          value={search}
+          onChange={(e) =>
+            setSearch(
+              e.target.value
+            )
+          }
+          className="border p-3 rounded w-full mb-5"
+        />
+
+        <div className="overflow-auto">
+
+          <table className="w-full border">
+
+            <thead>
+
+              <tr className="bg-gray-100">
+
+                <th className="border p-3">
+                  ID
+                </th>
+
+                <th className="border p-3">
+                  Nama
+                </th>
+
+                <th className="border p-3">
+                  No HP
+                </th>
+
+                <th className="border p-3">
+                  Liter
+                </th>
+
+                <th className="border p-3">
+                  Tanggal
+                </th>
+
+                <th className="border p-3">
+                  Status
+                </th>
+
+                <th className="border p-3">
+                  Aksi
+                </th>
+
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              {
+                filteredData.length === 0
+                  ? (
+
+                    <tr>
+
+                      <td
+                        colSpan="7"
+                        className="text-center p-5"
+                      >
+                        Data tidak ditemukan
+                      </td>
+
+                    </tr>
+
+                  )
+                  : (
+
+                    filteredData.map(
+                      (item) => (
+
+                        <tr key={item.id}>
+
+                          <td className="border p-3">
+                            {item.id}
+                          </td>
+
+                          <td className="border p-3">
+                            {item.nama}
+                          </td>
+
+                          <td className="border p-3">
+                            {
+                              item.hp ||
+                              item.nohp
+                            }
+                          </td>
+
+                          <td className="border p-3">
+                            {item.jumlah} Liter
+                          </td>
+
+                          <td className="border p-3">
+                            {
+                              item.tanggalPengajuan
+                            }
+                          </td>
+
+                          <td className="border p-3">
+
+                            <select
+                              value={
+                                item.status
+                              }
+                              onChange={(e) =>
+                                ubahStatus(
+                                  item.id,
+                                  e.target.value
+                                )
+                              }
+                              className="border p-2 rounded"
+                            >
+
+                              <option>
+                                Menunggu
+                              </option>
+
+                              <option>
+                                Dijadwalkan
+                              </option>
+
+                              <option>
+                                Diproses
+                              </option>
+
+                              <option>
+                                Dalam Perjalanan
+                              </option>
+
+                              <option>
+                                Sedang Dijemput
+                              </option>
+
+                              <option>
+                                Selesai
+                              </option>
+
+                              <option>
+                                Dibatalkan
+                              </option>
+
+                            </select>
+
+                          </td>
+
+                          <td className="border p-3">
+
+                            <div className="flex gap-2">
+
+                              <Link
+                                to={`/penjemputan/${item.id}`}
+                                className="bg-blue-500 text-white px-3 py-1 rounded"
+                              >
+                                Detail
+                              </Link>
+
+                              <button
+                                onClick={() =>
+                                  hapusData(
+                                    item.id
+                                  )
+                                }
+                                className="bg-red-500 text-white px-3 py-1 rounded"
+                              >
+                                Hapus
+                              </button>
+
+                            </div>
+
+                          </td>
+
+                        </tr>
+
+                      )
+                    )
+
+                  )
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  );
 }

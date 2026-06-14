@@ -1,37 +1,26 @@
 import { useState } from "react";
-
 import { useNavigate } from "react-router-dom";
-
-import axios from "axios";
 
 export default function Login() {
 
     const navigate = useNavigate();
 
-    /*
-    |--------------------------------------------------------------------------
-    | State
-    |--------------------------------------------------------------------------
-    */
+    const [loading, setLoading] =
+        useState(false);
 
-    const [loading, setLoading] = useState(false);
+    const [error, setError] =
+        useState("");
 
-    const [error, setError] = useState("");
-
-    const [dataForm, setDataForm] = useState({
-        email: "",
-        password: "",
-    });
-
-    /*
-    |--------------------------------------------------------------------------
-    | Handle Input
-    |--------------------------------------------------------------------------
-    */
+    const [dataForm, setDataForm] =
+        useState({
+            email: "",
+            password: "",
+        });
 
     const handleChange = (evt) => {
 
-        const { name, value } = evt.target;
+        const { name, value } =
+            evt.target;
 
         setDataForm({
             ...dataForm,
@@ -40,13 +29,7 @@ export default function Login() {
 
     };
 
-    /*
-    |--------------------------------------------------------------------------
-    | Handle Submit
-    |--------------------------------------------------------------------------
-    */
-
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
 
         e.preventDefault();
 
@@ -54,54 +37,65 @@ export default function Login() {
 
         setError("");
 
-        axios
+        setTimeout(() => {
 
-            .post(
-                "https://dummyjson.com/auth/login",
-                {
-                    username: dataForm.email,
-                    password: dataForm.password,
-                }
-            )
+            if (
+                dataForm.email ===
+                    "admin" &&
+                dataForm.password ===
+                    "admin123"
+            ) {
 
-            .then((response) => {
-
-                console.log(response.data);
-
-                // Simpan login
                 localStorage.setItem(
                     "petugas",
-                    JSON.stringify(response.data)
+                    JSON.stringify({
+                        firstName:
+                            "Administrator",
+                        username:
+                            "admin",
+                        role:
+                            "Admin",
+                    })
                 );
 
-                // Redirect
-                navigate("/dashboard");
+                navigate(
+                    "/dashboard"
+                );
 
-            })
+            } else if (
+                dataForm.email ===
+                    "petugas" &&
+                dataForm.password ===
+                    "petugas123"
+            ) {
 
-            .catch((err) => {
+                localStorage.setItem(
+                    "petugas",
+                    JSON.stringify({
+                        firstName:
+                            "Petugas Lapangan",
+                        username:
+                            "petugas",
+                        role:
+                            "Petugas",
+                    })
+                );
 
-                if (err.response) {
+                navigate(
+                    "/dashboard"
+                );
 
-                    setError(
-                        err.response.data.message
-                    );
+            } else {
 
-                } else {
+                setError(
+                    "Username atau Password salah"
+                );
 
-                    setError(
-                        "Terjadi kesalahan server"
-                    );
+            }
 
-                }
+            setLoading(false);
 
-            })
-
-            .finally(() => {
-
-                setLoading(false);
-
-            });
+        }, 800);
 
     };
 
@@ -111,7 +105,6 @@ export default function Login() {
 
             <div className="bg-white w-[450px] p-10 rounded-3xl shadow-sm">
 
-                {/* Logo */}
                 <div className="text-center">
 
                     <h1 className="text-4xl font-bold text-green-700">
@@ -124,7 +117,6 @@ export default function Login() {
 
                 </div>
 
-                {/* Error */}
                 {
                     error && (
 
@@ -137,22 +129,21 @@ export default function Login() {
                     )
                 }
 
-                {/* Loading */}
                 {
                     loading && (
 
                         <div className="bg-gray-100 text-gray-700 p-4 rounded-2xl mt-8 text-sm">
 
-                            Mohon tunggu...
-
+                            Memproses login...
                         </div>
 
                     )
                 }
 
-                {/* Form */}
                 <form
-                    onSubmit={handleSubmit}
+                    onSubmit={
+                        handleSubmit
+                    }
                     className="space-y-5 mt-8"
                 >
 
@@ -160,7 +151,12 @@ export default function Login() {
                         type="text"
                         name="email"
                         placeholder="Username"
-                        onChange={handleChange}
+                        value={
+                            dataForm.email
+                        }
+                        onChange={
+                            handleChange
+                        }
                         className="w-full border p-4 rounded-2xl outline-none"
                     />
 
@@ -168,35 +164,60 @@ export default function Login() {
                         type="password"
                         name="password"
                         placeholder="Password"
-                        onChange={handleChange}
+                        value={
+                            dataForm.password
+                        }
+                        onChange={
+                            handleChange
+                        }
                         className="w-full border p-4 rounded-2xl outline-none"
                     />
 
                     <button
                         type="submit"
+                        disabled={
+                            loading
+                        }
                         className="w-full bg-green-600 hover:bg-green-700 transition-all text-white p-4 rounded-2xl"
                     >
 
                         {
                             loading
-                            ? "Loading..."
-                            : "Login"
+                                ? "Loading..."
+                                : "Login"
                         }
 
                     </button>
 
                 </form>
 
-                {/* Demo */}
-                <div className="mt-8 text-sm text-gray-500 text-center leading-7">
+                <div className="mt-8 text-sm text-gray-500 text-center leading-7 border-t pt-5">
 
-                    Username :
-                    <b> emilys </b>
+                    <p className="font-semibold">
+                        Akun Demo
+                    </p>
+
+                    <p>
+                        Username :
+                        <b> admin </b>
+                    </p>
+
+                    <p>
+                        Password :
+                        <b> admin123 </b>
+                    </p>
 
                     <br />
 
-                    Password :
-                    <b> emilyspass </b>
+                    <p>
+                        Username :
+                        <b> petugas </b>
+                    </p>
+
+                    <p>
+                        Password :
+                        <b> petugas123 </b>
+                    </p>
 
                 </div>
 
