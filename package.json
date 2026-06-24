@@ -14,7 +14,10 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^9.0.0",
     "@mui/material": "^9.0.0",
+<<<<<<< HEAD
     "@supabase/supabase-js": "^2.108.2",
+=======
+>>>>>>> 7a3028895eef780b3f9169ed0f9718a98f11f588
     "@tailwindcss/vite": "^4.2.2",
     "aos": "^2.3.4",
     "axios": "^1.17.0",
