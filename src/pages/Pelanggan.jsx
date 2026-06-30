@@ -29,31 +29,18 @@ export default function Pelanggan() {
 
     setLoading(true);
 
-    const {
-      data,
-      error,
-    } = await supabase
+    const { data, error } = await supabase
       .from("pelanggan")
       .select("*")
-      .order(
-        "id_pelanggan",
-        {
-          ascending: false,
-        }
-      );
+      .order("id_pelanggan", { ascending: false });
 
     if (error) {
-
       alert(error.message);
-
       setLoading(false);
-
       return;
-
     }
 
     setData(data);
-
     setLoading(false);
 
   };

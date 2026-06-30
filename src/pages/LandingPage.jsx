@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MdContentCopy } from "react-icons/md";
+import { motion } from "framer-motion";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { motion } from "framer-motion";
+import { supabase } from "../services/supabase";
 
 export default function LandingPage() {
 
@@ -29,13 +30,20 @@ export default function LandingPage() {
     const [showSuccess, setShowSuccess] =
         useState(false);
 
+    useEffect(() => {
+        AOS.init({
+            duration: 800,
+            once: true,
+        });
+    }, []);
+
     const handleScroll = () => {
         formRef.current.scrollIntoView({
             behavior: "smooth"
         });
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
 
         if (
             !form.nama ||
@@ -44,95 +52,150 @@ export default function LandingPage() {
             !form.jumlah ||
             !form.tanggal
         ) {
-
             alert("Isi semua data!");
-
             return;
         }
 
-        const oldData =
-            JSON.parse(
-                localStorage.getItem(
-                    "penjemputan"
-                )
-            ) || [];
+        try {
 
-        const idBaru =
-            "UCO-" + Date.now();
+            const kodePengajuan =
+                "UCO-" + Date.now();
 
-        const dataBaru = {
-            id: idBaru,
-            nama: form.nama,
-            hp: form.hp,
-            alamat: form.alamat,
-            jumlah: form.jumlah,
-            tanggal: form.tanggal,
-            status: "Menunggu",
-            tanggalPengajuan:
-                new Date().toLocaleDateString()
-        };
+            const {
+                data: pelanggan,
+                error: pelangganError,
+            } = await supabase
+                .from("pelanggan")
+                .insert([
+                    {
+                        nama: form.nama,
+                        no_hp: form.hp,
+                        alamat: form.alamat,
+                    },
+                ])
+                .select()
+                .single();
 
-        const newData = [
-            ...oldData,
-            dataBaru
-        ];
+            if (pelangganError)
+                throw pelangganError;
 
-        localStorage.setItem(
-            "penjemputan",
-            JSON.stringify(newData)
-        );
+            const {
+                error: penjemputanError,
+            } = await supabase
+                .from("penjemputan")
+                .insert([
+                    {
+                        id_pelanggan:
+                            pelanggan.id_pelanggan,
+                        kode_pengajuan:
+                            kodePengajuan,
+                        estimasi_liter:
+                            Number(form.jumlah),
+                        tanggal_pengajuan:
+                            form.tanggal,
+                        status: "Pending",
+                    },
+                ]);
 
-        setNomorPengajuan(idBaru);
-        setShowSuccess(true);
+            if (penjemputanError)
+                throw penjemputanError;
 
-        setForm({
-            nama: "",
-            hp: "",
-            alamat: "",
-            jumlah: "",
-            tanggal: ""
-        });
+            setNomorPengajuan(
+                kodePengajuan
+            );
+
+            setShowSuccess(true);
+
+            setForm({
+                nama: "",
+                hp: "",
+                alamat: "",
+                jumlah: "",
+                tanggal: "",
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(error.message);
+
+        }
+
     };
 
-    const cekStatus = () => {
+    const cekStatus = async () => {
 
-        const data =
-            JSON.parse(
-                localStorage.getItem(
-                    "penjemputan"
-                )
-            ) || [];
-
-        const ditemukan =
-            data.find(
-                (item) =>
-                    item.id?.toLowerCase() ===
-                    idPengajuan.toLowerCase()
-            );
-
-        if (!ditemukan) {
-
-            alert(
-                "ID Pengajuan tidak ditemukan"
-            );
-
+        if (!idPengajuan.trim()) {
+            alert("Masukkan ID Pengajuan");
             return;
         }
 
-        setHasilCek(ditemukan);
+        try {
+
+            // Cari data penjemputan
+            const {
+                data: penjemputan,
+                error: penjemputanError,
+            } = await supabase
+                .from("penjemputan")
+                .select("*")
+                .eq(
+                    "kode_pengajuan",
+                    idPengajuan.trim()
+                )
+                .single();
+
+            console.log("Penjemputan:", penjemputan);
+            console.log("Error:", penjemputanError);
+
+            if (penjemputanError || !penjemputan) {
+                alert("ID Pengajuan tidak ditemukan");
+                return;
+            }
+
+            // Cari data pelanggan
+            const {
+                data: pelanggan,
+                error: pelangganError,
+            } = await supabase
+                .from("pelanggan")
+                .select("*")
+                .eq(
+                    "id_pelanggan",
+                    penjemputan.id_pelanggan
+                )
+                .single();
+
+            if (pelangganError) {
+                throw pelangganError;
+            }
+
+            // Gabungkan data
+            setHasilCek({
+                kode_pengajuan:
+                    penjemputan.kode_pengajuan,
+
+                tanggal_pengajuan:
+                    penjemputan.tanggal_pengajuan,
+
+                estimasi_liter:
+                    penjemputan.estimasi_liter,
+
+                status:
+                    penjemputan.status,
+
+                pelanggan,
+            });
+
+        } catch (err) {
+
+            console.error(err);
+            alert(err.message);
+
+        }
+
     };
-
-    const copyID = async () => {
-
-        await navigator.clipboard.writeText(
-            nomorPengajuan
-        );
-
-        alert(
-            "ID berhasil disalin!"
-        );
-    };
-
     return (
         <div className="min-h-screen bg-gray-100">
 
@@ -532,13 +595,13 @@ export default function LandingPage() {
 
                             <div className="space-y-2">
 
-                                <p><b>ID:</b> {hasilCek.id}</p>
-                                <p><b>Nama:</b> {hasilCek.nama}</p>
-                                <p><b>No HP:</b> {hasilCek.hp}</p>
-                                <p><b>Alamat:</b> {hasilCek.alamat}</p>
-                                <p><b>Jumlah:</b> {hasilCek.jumlah} Liter</p>
-                                <p><b>Tanggal:</b> {hasilCek.tanggal}</p>
-
+                                <p><b>ID:</b> {hasilCek?.kode_pengajuan}</p>
+                                <p><b>Nama:</b> {hasilCek?.pelanggan?.nama}</p>
+                                <p><b>No HP:</b> {hasilCek?.pelanggan?.no_hp}</p>
+                                <p><b>Alamat:</b> {hasilCek?.pelanggan?.alamat}</p>
+                                <p><b>Jumlah:</b> {hasilCek?.estimasi_liter} Liter</p>
+                                <p><b>Tanggal:</b> {hasilCek?.tanggal_pengajuan}</p>
+                                <p><b>Status:</b> {hasilCek?.status}</p>
                                 <p>
                                     <b>Status:</b>{" "}
                                     <span
