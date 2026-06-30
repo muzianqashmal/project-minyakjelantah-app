@@ -1,57 +1,106 @@
 import { useEffect, useState } from "react";
+import { supabase } from "../services/supabase";
 
 export default function Laporan() {
 
-    const [data, setData] = useState([]);
+    const [data, setData] =
+        useState([]);
+
+    const [loading, setLoading] =
+        useState(true);
 
     useEffect(() => {
 
-        const penjemputan =
-            JSON.parse(
-                localStorage.getItem(
-                    "penjemputan"
-                )
-            ) || [];
-
-        setData(penjemputan);
+        loadData();
 
     }, []);
+
+    const loadData = async () => {
+
+        setLoading(true);
+
+        const {
+            data,
+            error,
+        } = await supabase
+            .from("penjemputan")
+            .select(`
+                *,
+                pelanggan(
+                    nama,
+                    no_hp
+                )
+            `)
+            .order(
+                "tanggal_pengajuan",
+                {
+                    ascending: false,
+                }
+            );
+
+        if (error) {
+
+            alert(error.message);
+
+            setLoading(false);
+
+            return;
+
+        }
+
+        setData(data);
+
+        setLoading(false);
+
+    };
 
     const totalPenjemputan =
         data.length;
 
     const totalLiter =
         data.reduce(
+
             (total, item) =>
+
                 total +
                 Number(
-                    item.jumlah || 0
+                    item.estimasi_liter
                 ),
+
             0
+
         );
 
     const totalSelesai =
         data.filter(
-            (item) =>
+
+            item =>
                 item.status ===
                 "Selesai"
+
         ).length;
 
     const totalDiproses =
         data.filter(
-            (item) =>
+
+            item =>
+
                 item.status ===
-                    "Diproses" ||
+                "Diproses" ||
+
                 item.status ===
-                    "Dalam Perjalanan"
+                "Dalam Perjalanan"
+
         ).length;
 
-    const cetakLaporan = () => {
-        window.print();
-    };
+    const cetakLaporan =
+        () => {
+
+            window.print();
+
+        };
 
     return (
-
         <div className="space-y-6">
 
             <div>
@@ -61,9 +110,8 @@ export default function Laporan() {
                 </h1>
 
                 <p className="text-gray-500">
-                    Rekapitulasi Data
-                    Penjemputan Minyak
-                    Jelantah
+                    Rekapitulasi Data Penjemputan
+                    Minyak Jelantah
                 </p>
 
             </div>
@@ -77,7 +125,9 @@ export default function Laporan() {
                     </h3>
 
                     <h1 className="text-4xl font-bold text-blue-600">
+
                         {totalPenjemputan}
+
                     </h1>
 
                 </div>
@@ -89,7 +139,9 @@ export default function Laporan() {
                     </h3>
 
                     <h1 className="text-4xl font-bold text-purple-600">
+
                         {totalLiter}
+
                     </h1>
 
                 </div>
@@ -100,8 +152,10 @@ export default function Laporan() {
                         Sedang Diproses
                     </h3>
 
-                    <h1 className="text-4xl font-bold text-yellow-500">
+                    <h1 className="text-4xl font-bold text-yellow-600">
+
                         {totalDiproses}
+
                     </h1>
 
                 </div>
@@ -113,7 +167,9 @@ export default function Laporan() {
                     </h3>
 
                     <h1 className="text-4xl font-bold text-green-600">
+
                         {totalSelesai}
+
                     </h1>
 
                 </div>
@@ -125,13 +181,11 @@ export default function Laporan() {
                 <div className="flex justify-between items-center mb-5">
 
                     <h2 className="text-xl font-bold">
-                        Detail Data
+                        Detail Data Penjemputan
                     </h2>
 
                     <button
-                        onClick={
-                            cetakLaporan
-                        }
+                        onClick={cetakLaporan}
                         className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-xl"
                     >
                         Cetak Laporan
@@ -148,7 +202,7 @@ export default function Laporan() {
                             <tr className="bg-gray-100">
 
                                 <th className="border p-3">
-                                    ID
+                                    Kode
                                 </th>
 
                                 <th className="border p-3">
@@ -156,7 +210,7 @@ export default function Laporan() {
                                 </th>
 
                                 <th className="border p-3">
-                                    Jumlah
+                                    Liter
                                 </th>
 
                                 <th className="border p-3">
@@ -174,66 +228,136 @@ export default function Laporan() {
                         <tbody>
 
                             {
-                                data.length === 0
-                                    ? (
+
+                                loading ? (
+
+                                    <tr>
+
+                                        <td
+                                            colSpan="5"
+                                            className="text-center p-6"
+                                        >
+
+                                            Memuat data...
+
+                                        </td>
+
+                                    </tr>
+
+                                )
+
+                                    :
+
+                                    data.length === 0 ? (
+
                                         <tr>
 
                                             <td
                                                 colSpan="5"
-                                                className="text-center p-5"
+                                                className="text-center p-6"
                                             >
+
                                                 Belum ada data
+
                                             </td>
 
                                         </tr>
+
                                     )
-                                    : (
-                                        data.map(
-                                            (
-                                                item
-                                            ) => (
 
-                                                <tr
-                                                    key={
-                                                        item.id
+                                        :
+
+                                        data.map((item) => (
+
+                                            <tr
+                                                key={
+                                                    item.id_penjemputan
+                                                }
+                                            >
+
+                                                <td className="border p-3">
+
+                                                    {
+                                                        item.kode_pengajuan
                                                     }
-                                                >
 
-                                                    <td className="border p-3">
-                                                        {
-                                                            item.id
-                                                        }
-                                                    </td>
+                                                </td>
 
-                                                    <td className="border p-3">
-                                                        {
-                                                            item.nama
-                                                        }
-                                                    </td>
+                                                <td className="border p-3">
 
-                                                    <td className="border p-3">
-                                                        {
-                                                            item.jumlah
-                                                        } Liter
-                                                    </td>
+                                                    {
+                                                        item.pelanggan
+                                                            ?.nama
+                                                    }
 
-                                                    <td className="border p-3">
-                                                        {
-                                                            item.tanggal
-                                                        }
-                                                    </td>
+                                                </td>
 
-                                                    <td className="border p-3">
+                                                <td className="border p-3">
+
+                                                    {
+                                                        item.estimasi_liter
+                                                    } Liter
+
+                                                </td>
+
+                                                <td className="border p-3">
+
+                                                    {
+
+                                                        new Date(
+                                                            item.tanggal_pengajuan
+                                                        ).toLocaleDateString(
+                                                            "id-ID"
+                                                        )
+
+                                                    }
+
+                                                </td>
+
+                                                <td className="border p-3">
+
+                                                    <span
+                                                        className={`px-3 py-1 rounded text-white
+
+                                        ${item.status ===
+                                                                "Selesai"
+
+                                                                ? "bg-green-500"
+
+                                                                : item.status ===
+                                                                    "Diproses"
+
+                                                                    ? "bg-yellow-500"
+
+                                                                    : item.status ===
+                                                                        "Dalam Perjalanan"
+
+                                                                        ? "bg-blue-500"
+
+                                                                        : item.status ===
+                                                                            "Pending"
+
+                                                                            ? "bg-orange-500"
+
+                                                                            : "bg-red-500"
+
+                                                            }
+
+                                        `}
+                                                    >
+
                                                         {
                                                             item.status
                                                         }
-                                                    </td>
 
-                                                </tr>
+                                                    </span>
 
-                                            )
-                                        )
-                                    )
+                                                </td>
+
+                                            </tr>
+
+                                        ))
+
                             }
 
                         </tbody>
@@ -247,4 +371,5 @@ export default function Laporan() {
         </div>
 
     );
+
 }

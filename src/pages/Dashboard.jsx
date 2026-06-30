@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { supabase } from "../services/supabase";
 
 import {
     Chart as ChartJS,
@@ -30,10 +31,16 @@ export default function Dashboard() {
     const [totalPenjemputan, setTotalPenjemputan] =
         useState(0);
 
+    const [totalLiter, setTotalLiter] =
+        useState(0);
+
     const [diproses, setDiproses] =
         useState(0);
 
     const [selesai, setSelesai] =
+        useState(0);
+
+    const [pending, setPending] =
         useState(0);
 
     const [dataTerbaru, setDataTerbaru] =
@@ -42,96 +49,175 @@ export default function Dashboard() {
     const [chartData, setChartData] =
         useState(null);
 
+    const [loading, setLoading] =
+        useState(true);
+
     useEffect(() => {
+
         loadData();
+
     }, []);
 
-    const loadData = () => {
+    const loadData = async () => {
 
-        const data =
-            JSON.parse(
-                localStorage.getItem(
-                    "penjemputan"
+        setLoading(true);
+
+        const {
+            data: penjemputan,
+            error,
+        } = await supabase
+            .from("penjemputan")
+            .select(`
+                *,
+                pelanggan(
+                    id_pelanggan,
+                    nama,
+                    no_hp,
+                    alamat
+                ),
+                petugas(
+                    id_petugas,
+                    nama
                 )
-            ) || [];
+            `)
+            .order(
+                "tanggal_pengajuan",
+                {
+                    ascending: false,
+                }
+            );
 
-        setTotalPenjemputan(
-            data.length
-        );
+        if (error) {
 
-        const pelangganUnik = [
-            ...new Set(
-                data.map(
-                    (item) =>
-                        item.hp ||
-                        item.nohp
-                )
-            ),
-        ];
+            alert(error.message);
+
+            setLoading(false);
+
+            return;
+
+        }
+
+        const {
+            count: jumlahPelanggan,
+        } = await supabase
+            .from("pelanggan")
+            .select("*", {
+                count: "exact",
+                head: true,
+            });
 
         setTotalPelanggan(
-            pelangganUnik.length
+            jumlahPelanggan || 0
         );
 
-        const menunggu =
-            data.filter(
-                (item) =>
+        setTotalPenjemputan(
+            penjemputan.length
+        );
+
+        const total =
+            penjemputan.reduce(
+
+                (jumlah, item) =>
+
+                    jumlah +
+                    Number(
+                        item.estimasi_liter
+                    ),
+
+                0
+
+            );
+
+        setTotalLiter(
+            total
+        );
+
+        const dataPending =
+            penjemputan.filter(
+                item =>
                     item.status ===
-                    "Menunggu"
+                    "Pending"
             ).length;
 
-        const jumlahDiproses =
-            data.filter(
-                (item) =>
+        const dataDiproses =
+            penjemputan.filter(
+                item =>
                     item.status ===
                     "Diproses" ||
+
                     item.status ===
                     "Dalam Perjalanan"
             ).length;
 
-        const jumlahSelesai =
-            data.filter(
-                (item) =>
+        const dataSelesai =
+            penjemputan.filter(
+                item =>
                     item.status ===
                     "Selesai"
             ).length;
 
+        setPending(
+            dataPending
+        );
+
         setDiproses(
-            jumlahDiproses
+            dataDiproses
         );
 
         setSelesai(
-            jumlahSelesai
+            dataSelesai
         );
 
         setChartData({
+
             labels: [
-                "Menunggu",
+
+                "Pending",
+
                 "Diproses",
+
                 "Selesai",
+
             ],
+
             datasets: [
+
                 {
+
                     data: [
-                        menunggu,
-                        jumlahDiproses,
-                        jumlahSelesai,
+
+                        dataPending,
+
+                        dataDiproses,
+
+                        dataSelesai,
+
                     ],
+
                     backgroundColor: [
+
                         "#f59e0b",
+
                         "#3b82f6",
+
                         "#22c55e",
+
                     ],
+
                     borderWidth: 0,
+
                 },
+
             ],
+
         });
 
         setDataTerbaru(
-            [...data]
-                .reverse()
-                .slice(0, 5)
+            penjemputan.slice(0, 5)
         );
+
+        setLoading(false);
+
     };
 
     return (
@@ -148,32 +234,39 @@ export default function Dashboard() {
                     </h1>
 
                     <p className="text-slate-500 mt-1">
-                        Selamat datang kembali, Admin!
-                        Kelola penjemputan minyak jelantah dengan mudah.
+                        Selamat datang kembali.
+                        Kelola data penjemputan minyak jelantah.
                     </p>
 
                 </div>
 
-                <div className="bg-white px-5 py-3 rounded-xl shadow-sm">
-                    {new Date().toLocaleDateString("id-ID", {
-                        weekday: "long",
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                    })}
+                <div className="bg-white px-5 py-3 rounded-xl shadow">
+
+                    {
+                        new Date().toLocaleDateString(
+                            "id-ID",
+                            {
+                                weekday: "long",
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                            }
+                        )
+                    }
+
                 </div>
 
             </div>
 
-            {/* Statistik */}
+            {/* Card Statistik */}
 
-            <div className="grid lg:grid-cols-4 gap-5">
+            <div className="grid lg:grid-cols-5 gap-5">
 
-                <div className="bg-white p-6 rounded-2xl shadow-sm">
+                <div className="bg-white p-6 rounded-2xl shadow">
 
                     <div className="flex items-center gap-4">
 
-                        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                        <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center">
 
                             <MdLocalShipping
                                 size={30}
@@ -184,17 +277,13 @@ export default function Dashboard() {
 
                         <div>
 
-                            <h3 className="text-gray-500">
-                                Total Penjemputan
-                            </h3>
+                            <p className="text-gray-500">
+                                Penjemputan
+                            </p>
 
                             <h1 className="text-4xl font-bold">
                                 {totalPenjemputan}
                             </h1>
-
-                            <p className="text-sm text-gray-400">
-                                Semua data penjemputan
-                            </p>
 
                         </div>
 
@@ -202,35 +291,28 @@ export default function Dashboard() {
 
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl shadow-sm">
+                <div className="bg-white p-6 rounded-2xl shadow">
 
                     <div className="flex items-center gap-4">
 
-                        <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center">
+                        <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
 
-                            <MdPending
+                            <MdPeople
                                 size={30}
-                                className="text-yellow-500"
+                                className="text-green-600"
                             />
 
                         </div>
 
                         <div>
 
-                            <h3 className="text-gray-500">
-                                Menunggu
-                            </h3>
+                            <p className="text-gray-500">
+                                Pelanggan
+                            </p>
 
                             <h1 className="text-4xl font-bold">
-                                {
-                                    chartData?.datasets[0]
-                                        ?.data[0]
-                                }
+                                {totalPelanggan}
                             </h1>
-
-                            <p className="text-sm text-gray-400">
-                                Menunggu proses
-                            </p>
 
                         </div>
 
@@ -238,11 +320,40 @@ export default function Dashboard() {
 
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl shadow-sm">
+                <div className="bg-white p-6 rounded-2xl shadow">
 
                     <div className="flex items-center gap-4">
 
-                        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                        <div className="w-16 h-16 rounded-full bg-yellow-100 flex items-center justify-center">
+
+                            <MdPending
+                                size={30}
+                                className="text-yellow-600"
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <p className="text-gray-500">
+                                Pending
+                            </p>
+
+                            <h1 className="text-4xl font-bold">
+                                {pending}
+                            </h1>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div className="bg-white p-6 rounded-2xl shadow">
+
+                    <div className="flex items-center gap-4">
+
+                        <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center">
 
                             <MdPending
                                 size={30}
@@ -253,17 +364,13 @@ export default function Dashboard() {
 
                         <div>
 
-                            <h3 className="text-gray-500">
+                            <p className="text-gray-500">
                                 Diproses
-                            </h3>
+                            </p>
 
                             <h1 className="text-4xl font-bold">
                                 {diproses}
                             </h1>
-
-                            <p className="text-sm text-gray-400">
-                                Sedang diproses
-                            </p>
 
                         </div>
 
@@ -271,11 +378,11 @@ export default function Dashboard() {
 
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl shadow-sm">
+                <div className="bg-white p-6 rounded-2xl shadow">
 
                     <div className="flex items-center gap-4">
 
-                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                        <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
 
                             <MdCheckCircle
                                 size={30}
@@ -286,17 +393,13 @@ export default function Dashboard() {
 
                         <div>
 
-                            <h3 className="text-gray-500">
+                            <p className="text-gray-500">
                                 Selesai
-                            </h3>
+                            </p>
 
                             <h1 className="text-4xl font-bold">
                                 {selesai}
                             </h1>
-
-                            <p className="text-sm text-gray-400">
-                                Selesai dijemput
-                            </p>
 
                         </div>
 
@@ -306,35 +409,64 @@ export default function Dashboard() {
 
             </div>
 
-            {/* Chart + Table */}
+            {/* Total Liter */}
+
+            <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-2xl p-6 text-white shadow">
+
+                <h3 className="text-lg">
+                    Total Estimasi Minyak Jelantah
+                </h3>
+
+                <h1 className="text-5xl font-bold mt-3">
+                    {totalLiter} Liter
+                </h1>
+
+            </div>
+
+            {/* Chart + Data */}
 
             <div className="grid lg:grid-cols-2 gap-6">
+                {/* Chart */}
 
-                <div className="bg-white rounded-2xl p-6 shadow-sm">
+                <div className="bg-white rounded-2xl p-6 shadow">
 
                     <h2 className="text-2xl font-bold">
                         Statistik Penjemputan
                     </h2>
 
-                    <p className="text-gray-500 text-sm mb-5">
+                    <p className="text-gray-500 mb-5">
                         Distribusi status penjemputan
                     </p>
 
                     <div className="max-w-[350px] mx-auto">
 
-                        {chartData && (
-                            <Doughnut
-                                data={chartData}
-                            />
-                        )}
+                        {
+                            loading ? (
+
+                                <p className="text-center">
+                                    Memuat grafik...
+                                </p>
+
+                            ) : (
+
+                                chartData && (
+                                    <Doughnut
+                                        data={chartData}
+                                    />
+                                )
+
+                            )
+                        }
 
                     </div>
 
                 </div>
 
-                <div className="bg-white rounded-2xl p-6 shadow-sm">
+                {/* Penjemputan Terbaru */}
 
-                    <div className="flex justify-between items-center mb-4">
+                <div className="bg-white rounded-2xl p-6 shadow">
+
+                    <div className="flex justify-between items-center mb-5">
 
                         <div>
 
@@ -343,14 +475,10 @@ export default function Dashboard() {
                             </h2>
 
                             <p className="text-sm text-gray-500">
-                                5 data penjemputan terbaru
+                                5 data terbaru
                             </p>
 
                         </div>
-
-                        <button className="text-green-600 font-semibold">
-                            Lihat Semua
-                        </button>
 
                     </div>
 
@@ -382,45 +510,106 @@ export default function Dashboard() {
 
                         <tbody>
 
-                            {dataTerbaru.map(
-                                (item) => (
+                            {
+                                loading ? (
 
-                                    <tr
-                                        key={item.id}
-                                        className="border-b"
-                                    >
+                                    <tr>
 
-                                        <td className="py-3">
-                                            {item.nama}
-                                        </td>
-
-                                        <td>
-                                            {item.jumlah} L
-                                        </td>
-
-                                        <td>
-
-                                            <span
-                                                className={`px-3 py-1 rounded-full text-xs ${item.status === "Selesai"
-                                                        ? "bg-green-100 text-green-700"
-                                                        : item.status === "Diproses"
-                                                            ? "bg-blue-100 text-blue-700"
-                                                            : "bg-yellow-100 text-yellow-700"
-                                                    }`}
-                                            >
-                                                {item.status}
-                                            </span>
-
-                                        </td>
-
-                                        <td>
-                                            {item.tanggal}
+                                        <td
+                                            colSpan="4"
+                                            className="text-center py-6"
+                                        >
+                                            Memuat...
                                         </td>
 
                                     </tr>
 
-                                )
-                            )}
+                                ) :
+
+                                    dataTerbaru.length === 0 ? (
+
+                                        <tr>
+
+                                            <td
+                                                colSpan="4"
+                                                className="text-center py-6"
+                                            >
+                                                Belum ada data
+                                            </td>
+
+                                        </tr>
+
+                                    ) :
+
+                                        dataTerbaru.map((item) => (
+
+                                            <tr
+                                                key={
+                                                    item.id_penjemputan
+                                                }
+                                                className="border-b"
+                                            >
+
+                                                <td className="py-3">
+
+                                                    {
+                                                        item.pelanggan
+                                                            ?.nama
+                                                    }
+
+                                                </td>
+
+                                                <td>
+
+                                                    {
+                                                        item.estimasi_liter
+                                                    } L
+
+                                                </td>
+
+                                                <td>
+
+                                                    <span
+                                                        className={`px-3 py-1 rounded-full text-xs
+                                ${item.status ===
+                                                                "Selesai"
+
+                                                                ? "bg-green-100 text-green-700"
+
+                                                                : item.status ===
+                                                                    "Diproses" ||
+                                                                    item.status ===
+                                                                    "Dalam Perjalanan"
+
+                                                                    ? "bg-blue-100 text-blue-700"
+
+                                                                    : "bg-yellow-100 text-yellow-700"
+                                                            }`}
+                                                    >
+
+                                                        {item.status}
+
+                                                    </span>
+
+                                                </td>
+
+                                                <td>
+
+                                                    {
+                                                        new Date(
+                                                            item.tanggal_pengajuan
+                                                        ).toLocaleDateString(
+                                                            "id-ID"
+                                                        )
+                                                    }
+
+                                                </td>
+
+                                            </tr>
+
+                                        ))
+
+                            }
 
                         </tbody>
 
@@ -431,5 +620,7 @@ export default function Dashboard() {
             </div>
 
         </div>
+
     );
+
 }

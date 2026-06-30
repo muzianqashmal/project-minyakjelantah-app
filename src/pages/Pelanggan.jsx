@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
+import { supabase } from "../services/supabase";
 
 export default function Pelanggan() {
 
   const [data, setData] = useState([]);
-  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  const [search, setSearch] =
+    useState("");
 
   const [editId, setEditId] =
     useState(null);
@@ -11,28 +15,113 @@ export default function Pelanggan() {
   const [form, setForm] =
     useState({
       nama: "",
-      hp: "",
+      no_hp: "",
       alamat: "",
     });
 
   useEffect(() => {
+
     loadData();
+
   }, []);
 
-  const loadData = () => {
+  const loadData = async () => {
 
-    const hasil =
-      JSON.parse(
-        localStorage.getItem(
-          "penjemputan"
-        )
-      ) || [];
+    setLoading(true);
 
-    setData(hasil);
+    const {
+      data,
+      error,
+    } = await supabase
+      .from("pelanggan")
+      .select("*")
+      .order(
+        "id_pelanggan",
+        {
+          ascending: false,
+        }
+      );
+
+    if (error) {
+
+      alert(error.message);
+
+      setLoading(false);
+
+      return;
+
+    }
+
+    setData(data);
+
+    setLoading(false);
 
   };
 
-  const hapusData = (id) => {
+  const editData = (item) => {
+
+    setEditId(
+      item.id_pelanggan
+    );
+
+    setForm({
+
+      nama:
+        item.nama,
+
+      no_hp:
+        item.no_hp,
+
+      alamat:
+        item.alamat,
+
+    });
+
+  };
+
+  const simpanEdit = async () => {
+
+    const { error } =
+      await supabase
+        .from("pelanggan")
+        .update({
+
+          nama:
+            form.nama,
+
+          no_hp:
+            form.no_hp,
+
+          alamat:
+            form.alamat,
+
+        })
+        .eq(
+          "id_pelanggan",
+          editId
+        );
+
+    if (error) {
+
+      alert(error.message);
+
+      return;
+
+    }
+
+    alert(
+      "Data berhasil diperbarui"
+    );
+
+    setEditId(null);
+
+    loadData();
+
+  };
+
+  const hapusData = async (
+    id
+  ) => {
 
     if (
       !window.confirm(
@@ -42,111 +131,54 @@ export default function Pelanggan() {
       return;
     }
 
-    const hasil =
-      data.filter(
-        (item) =>
-          item.id !== id
-      );
+    const { error } =
+      await supabase
+        .from("pelanggan")
+        .delete()
+        .eq(
+          "id_pelanggan",
+          id
+        );
 
-    setData(hasil);
+    if (error) {
 
-    localStorage.setItem(
-      "penjemputan",
-      JSON.stringify(hasil)
-    );
+      alert(error.message);
 
-  };
+      return;
 
-  const editData = (item) => {
-
-    setEditId(item.id);
-
-    setForm({
-      nama: item.nama || "",
-      hp:
-        item.hp ||
-        item.nohp ||
-        "",
-      alamat:
-        item.alamat || "",
-    });
-
-  };
-
-  const simpanEdit = () => {
-
-    const hasil =
-      data.map((item) => {
-
-        if (
-          item.id === editId
-        ) {
-
-          return {
-            ...item,
-            nama: form.nama,
-            hp: form.hp,
-            alamat:
-              form.alamat,
-          };
-
-        }
-
-        return item;
-
-      });
-
-    setData(hasil);
-
-    localStorage.setItem(
-      "penjemputan",
-      JSON.stringify(hasil)
-    );
-
-    setEditId(null);
+    }
 
     alert(
-      "Data berhasil diperbarui"
+      "Data berhasil dihapus"
     );
+
+    loadData();
 
   };
 
   const filteredData =
-    data.filter((item) => {
+    data.filter((item) =>
 
-      const hp =
-        item.hp ||
-        item.nohp ||
-        "";
+      item.nama
+        ?.toLowerCase()
+        .includes(
+          search.toLowerCase()
+        )
 
-      return (
-        item.nama
-          ?.toLowerCase()
-          .includes(
-            search.toLowerCase()
-          ) ||
-        hp
-          .toLowerCase()
-          .includes(
-            search.toLowerCase()
-          )
-      );
+      ||
 
-    });
+      item.no_hp
+        ?.toLowerCase()
+        .includes(
+          search.toLowerCase()
+        )
+
+    );
 
   const totalPelanggan =
-    [
-      ...new Set(
-        data.map(
-          (item) =>
-            item.hp ||
-            item.nohp
-        )
-      ),
-    ].length;
+    data.length;
 
   return (
-
     <div className="space-y-6">
 
       <div className="bg-white p-6 rounded-xl shadow">
@@ -176,9 +208,7 @@ export default function Pelanggan() {
           placeholder="Cari nama atau nomor HP..."
           value={search}
           onChange={(e) =>
-            setSearch(
-              e.target.value
-            )
+            setSearch(e.target.value)
           }
           className="border p-3 rounded w-full mb-5"
         />
@@ -214,8 +244,24 @@ export default function Pelanggan() {
             <tbody>
 
               {
-                filteredData.length === 0
-                  ? (
+                loading ? (
+
+                  <tr>
+
+                    <td
+                      colSpan="4"
+                      className="text-center p-5"
+                    >
+
+                      Memuat data...
+
+                    </td>
+
+                  </tr>
+
+                ) :
+
+                  filteredData.length === 0 ? (
 
                     <tr>
 
@@ -223,72 +269,65 @@ export default function Pelanggan() {
                         colSpan="4"
                         className="text-center p-5"
                       >
-                        Data tidak ditemukan
+
+                        Belum ada data pelanggan
+
                       </td>
 
                     </tr>
 
-                  )
-                  : (
+                  ) :
 
-                    filteredData.map(
-                      (item) => (
+                    filteredData.map((item) => (
 
-                        <tr key={item.id}>
+                      <tr
+                        key={item.id_pelanggan}
+                      >
 
-                          <td className="border p-3">
-                            {item.nama}
-                          </td>
+                        <td className="border p-3">
+                          {item.nama}
+                        </td>
 
-                          <td className="border p-3">
-                            {
-                              item.hp ||
-                              item.nohp
-                            }
-                          </td>
+                        <td className="border p-3">
+                          {item.no_hp}
+                        </td>
 
-                          <td className="border p-3">
-                            {
-                              item.alamat
-                            }
-                          </td>
+                        <td className="border p-3">
+                          {item.alamat}
+                        </td>
 
-                          <td className="border p-3">
+                        <td className="border p-3">
 
-                            <div className="flex gap-2">
+                          <div className="flex gap-2">
 
-                              <button
-                                onClick={() =>
-                                  editData(
-                                    item
-                                  )
-                                }
-                                className="bg-blue-500 text-white px-3 py-1 rounded"
-                              >
-                                Edit
-                              </button>
+                            <button
+                              onClick={() =>
+                                editData(item)
+                              }
+                              className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
+                            >
+                              Edit
+                            </button>
 
-                              <button
-                                onClick={() =>
-                                  hapusData(
-                                    item.id
-                                  )
-                                }
-                                className="bg-red-500 text-white px-3 py-1 rounded"
-                              >
-                                Hapus
-                              </button>
+                            <button
+                              onClick={() =>
+                                hapusData(
+                                  item.id_pelanggan
+                                )
+                              }
+                              className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                            >
+                              Hapus
+                            </button>
 
-                            </div>
+                          </div>
 
-                          </td>
+                        </td>
 
-                        </tr>
+                      </tr>
 
-                      )
-                    )
+                    ))
 
-                  )
               }
 
             </tbody>
@@ -326,12 +365,12 @@ export default function Pelanggan() {
 
               <input
                 type="text"
-                placeholder="No HP"
-                value={form.hp}
+                placeholder="Nomor HP"
+                value={form.no_hp}
                 onChange={(e) =>
                   setForm({
                     ...form,
-                    hp:
+                    no_hp:
                       e.target.value,
                   })
                 }
@@ -354,10 +393,8 @@ export default function Pelanggan() {
               <div className="flex gap-3">
 
                 <button
-                  onClick={
-                    simpanEdit
-                  }
-                  className="bg-green-600 text-white px-5 py-2 rounded"
+                  onClick={simpanEdit}
+                  className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded"
                 >
                   Simpan
                 </button>
@@ -366,7 +403,7 @@ export default function Pelanggan() {
                   onClick={() =>
                     setEditId(null)
                   }
-                  className="bg-gray-500 text-white px-5 py-2 rounded"
+                  className="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2 rounded"
                 >
                   Batal
                 </button>
@@ -383,4 +420,5 @@ export default function Pelanggan() {
     </div>
 
   );
+
 }
