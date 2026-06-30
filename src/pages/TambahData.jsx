@@ -1,16 +1,10 @@
 import { useState } from "react";
-<<<<<<< HEAD
 import { supabase } from "../services/supabase";
 
 export default function TambahData() {
 
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
-=======
-
-export default function TambahData() {
->>>>>>> 7a3028895eef780b3f9169ed0f9718a98f11f588
   const [form, setForm] = useState({
     nama: "",
     nohp: "",
@@ -20,25 +14,16 @@ export default function TambahData() {
   });
 
   const handleChange = (e) => {
-<<<<<<< HEAD
 
-=======
->>>>>>> 7a3028895eef780b3f9169ed0f9718a98f11f588
     setForm({
       ...form,
       [e.target.name]: e.target.value,
     });
-<<<<<<< HEAD
 
   };
 
   const handleSubmit = async () => {
 
-=======
-  };
-
-  const handleSubmit = () => {
->>>>>>> 7a3028895eef780b3f9169ed0f9718a98f11f588
     if (
       !form.nama ||
       !form.nohp ||
@@ -49,7 +34,6 @@ export default function TambahData() {
       return;
     }
 
-<<<<<<< HEAD
     try {
 
       setLoading(true);
@@ -73,8 +57,7 @@ export default function TambahData() {
         .select()
         .single();
 
-      if (pelangganError)
-        throw pelangganError;
+      if (pelangganError) throw pelangganError;
 
       // Simpan penjemputan
       const {
@@ -115,7 +98,7 @@ export default function TambahData() {
       console.error(error);
 
       alert(
-        "Gagal menyimpan data: " +
+        "Gagal menyimpan data\n" +
         error.message
       );
 
@@ -129,46 +112,6 @@ export default function TambahData() {
 
   return (
 
-=======
-    const nomorPengajuan =
-      "UCO-" + Date.now();
-
-    const dataLama =
-      JSON.parse(
-        localStorage.getItem("penjemputan")
-      ) || [];
-
-    const dataBaru = {
-      id: nomorPengajuan,
-      ...form,
-      status: "Menunggu",
-      tanggalPengajuan:
-        new Date().toLocaleDateString(),
-    };
-
-    localStorage.setItem(
-      "penjemputan",
-      JSON.stringify([
-        ...dataLama,
-        dataBaru,
-      ])
-    );
-
-    alert(
-      `Pengajuan berhasil\nID: ${nomorPengajuan}`
-    );
-
-    setForm({
-      nama: "",
-      nohp: "",
-      alamat: "",
-      jumlah: "",
-      catatan: "",
-    });
-  };
-
-  return (
->>>>>>> 7a3028895eef780b3f9169ed0f9718a98f11f588
     <div className="bg-white p-6 rounded-xl shadow">
 
       <h1 className="text-3xl font-bold mb-6">
@@ -222,17 +165,14 @@ export default function TambahData() {
 
         <button
           onClick={handleSubmit}
-<<<<<<< HEAD
           disabled={loading}
           className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded"
         >
-
           {
             loading
               ? "Menyimpan..."
               : "Simpan Pengajuan"
           }
-
         </button>
 
       </div>
@@ -241,14 +181,4 @@ export default function TambahData() {
 
   );
 
-=======
-          className="bg-green-600 text-white px-6 py-3 rounded"
-        >
-          Simpan Pengajuan
-        </button>
-
-      </div>
-    </div>
-  );
->>>>>>> 7a3028895eef780b3f9169ed0f9718a98f11f588
 }
