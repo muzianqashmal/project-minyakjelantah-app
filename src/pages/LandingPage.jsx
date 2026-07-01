@@ -154,13 +154,8 @@ console.log("DATA  :", penjemputan);
 console.log("ERROR :", penjemputanError);
 
 if (penjemputanError) {
-    console.log("ERROR SUPABASE:", penjemputanError);
-
-    alert(
-        "CODE : " + penjemputanError.code +
-        "\nMESSAGE : " + penjemputanError.message +
-        "\nDETAILS : " + penjemputanError.details
-    );
+    alert(JSON.stringify(penjemputanError));
+    return;
 }
 
 if (!penjemputan) {
