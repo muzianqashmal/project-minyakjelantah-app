@@ -149,10 +149,19 @@ export default function LandingPage() {
             console.log("Penjemputan:", penjemputan);
             console.log("Error:", penjemputanError);
 
-            if (penjemputanError || !penjemputan) {
-                alert("ID Pengajuan tidak ditemukan");
-                return;
-            }
+            console.log("INPUT :", idPengajuan.trim());
+console.log("DATA  :", penjemputan);
+console.log("ERROR :", penjemputanError);
+
+if (penjemputanError) {
+    alert(JSON.stringify(penjemputanError));
+    return;
+}
+
+if (!penjemputan) {
+    alert("Data kosong");
+    return;
+}
 
             // Cari data pelanggan
             const {
@@ -196,6 +205,13 @@ export default function LandingPage() {
         }
 
     };
+    const copyID = async () => {
+    if (!nomorPengajuan) return;
+
+    await navigator.clipboard.writeText(nomorPengajuan);
+
+    alert("ID berhasil disalin!");
+};
     return (
         <div className="min-h-screen bg-gray-100">
 

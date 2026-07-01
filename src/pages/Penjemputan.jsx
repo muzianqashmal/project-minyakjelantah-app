@@ -11,13 +11,14 @@ export default function Penjemputan() {
   useEffect(() => {
     loadData();
   }, []);
+  
   const loadData = async () => {
 
-    setLoading(true);
+  setLoading(true);
 
-    const { data, error } = await supabase
-      .from("penjemputan")
-      .select(`
+  const { data, error } = await supabase
+    .from("penjemputan")
+    .select(`
       *,
       pelanggan (
         id_pelanggan,
@@ -30,35 +31,25 @@ export default function Penjemputan() {
         nama
       )
     `)
-      .order("tanggal_pengajuan", {
-        ascending: false,
-      });
+    .order("tanggal_pengajuan", {
+      ascending: false,
+    });
 
-    if (error) {
-      alert(error.message);
-      console.error(error);
-      setLoading(false);
-      return;
-    }
-
-    setData(data);
-    setLoading(false);
-
-  };
   console.log("DATA:", data);
   console.log("ERROR:", error);
 
   if (error) {
     alert(error.message);
     console.error(error);
+    setLoading(false);
     return;
   }
-  setData(data);
 
+  setData(data);
   setLoading(false);
 
 };
-
+ 
 const filteredData =
   data.filter((item) => {
 
@@ -499,3 +490,4 @@ return (
   </div>
 
 );
+}
